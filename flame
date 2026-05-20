@@ -1,0 +1,52 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "Flame Detector"
+#define BLYNK_AUTH_TOKEN "TOKEN_KAMU"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "NAMA_WIFI";
+char pass[] = "PASSWORD_WIFI";
+
+#define flamePin D5
+#define buzzerPin D6
+
+BlynkTimer timer;
+
+void sendData() {
+
+  int flame = digitalRead(flamePin);
+
+  if (flame == LOW) {
+
+    digitalWrite(buzzerPin, HIGH);
+
+    Blynk.virtualWrite(V0, "Api Terdeteksi");
+    Blynk.virtualWrite(V1, 255);
+
+  } else {
+
+    digitalWrite(buzzerPin, LOW);
+
+    Blynk.virtualWrite(V0, "Aman");
+    Blynk.virtualWrite(V1, 0);
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  pinMode(flamePin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(1000L, sendData);
+}
+
+void loop() {
+
+  Blynk.run();
+  timer.run();
+}
