@@ -1,0 +1,51 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "LDR Monitor"
+#define BLYNK_AUTH_TOKEN "TOKEN_KAMU"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "NAMA_WIFI";
+char pass[] = "PASSWORD_WIFI";
+
+#define ldrPin A0
+#define ledPin D5
+
+BlynkTimer timer;
+
+void sendData() {
+
+  int ldr = analogRead(ldrPin);
+
+  Blynk.virtualWrite(V0, ldr);
+
+  if (ldr < 500) {
+
+    digitalWrite(ledPin, HIGH);
+
+    Blynk.virtualWrite(V1, "Gelap");
+
+  } else {
+
+    digitalWrite(ledPin, LOW);
+
+    Blynk.virtualWrite(V1, "Terang");
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  pinMode(ledPin, OUTPUT);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(1000L, sendData);
+}
+
+void loop() {
+
+  Blynk.run();
+  timer.run();
+}
