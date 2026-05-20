@@ -1,0 +1,52 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "Sistem Monitoring Kelembapan Tanah"
+#define BLYNK_AUTH_TOKEN "Oru58QbLfkv4_lty7nCVKv3E2Iffqev9"
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <ESP32Servo.h>
+
+char ssid[] = "Wokwi-GUEST";
+char pass[] = "";
+
+#define soilPin 34
+#define ledPin 2
+
+Servo myServo;
+BlynkTimer timer;
+
+void sendData() {
+  int soilRaw = analogRead(soilPin);
+  int soilValue = map(soilRaw, 0, 4095, 0, 1023);
+  Serial.print("Soil Value: ");
+  Serial.println(soilValue);
+  Blynk.virtualWrite(V0, soilValue);
+
+  if (soilValue > 700) {
+    myServo.write(90);
+    digitalWrite(ledPin, HIGH);
+    Serial.println("Status: Tanah Kering - Servo Aktif");
+    Serial.println("LED Menyala");
+    Blynk.virtualWrite(V1, "Tanah Kering - Servo Aktif");
+    Blynk.virtualWrite(V2, 255);
+
+  } else {
+    myServo.write(0);
+    digitalWrite(ledPin, LOW);
+    Serial.println("Status: Tanah Lembap - Servo Mati");
+    Serial.println("LED Mati");
+    Blynk.virtualWrite(V1, "Tanah Lembap - Servo Mati");
+    Blynk.virtualWrite(V2, 0);
+  }
+}
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+  myServo.attach(13);
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+  timer.setInterval(1000L, sendData);
+}
+void loop() {
+  Blynk.run();
+  timer.run();
+}
