@@ -1,0 +1,60 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "Monitoring Tanah"
+#define BLYNK_AUTH_TOKEN "TOKEN_KAMU"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <Servo.h>
+
+char ssid[] = "NAMA_WIFI";
+char pass[] = "PASSWORD_WIFI";
+
+#define soilPin A0
+#define servoPin D5
+
+Servo myServo;
+BlynkTimer timer;
+
+void sendData() {
+
+  int soilValue = analogRead(soilPin);
+
+  Serial.print("Soil Value: ");
+  Serial.println(soilValue);
+
+  Blynk.virtualWrite(V0, soilValue);
+
+  if (soilValue > 700) {
+
+    myServo.write(90);
+
+    Serial.println("Tanah Kering");
+
+    Blynk.virtualWrite(V1, "Tanah Kering - Servo Aktif");
+
+  } else {
+
+    myServo.write(0);
+
+    Serial.println("Tanah Lembap");
+
+    Blynk.virtualWrite(V1, "Tanah Lembap - Servo Mati");
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  myServo.attach(servoPin);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(1000L, sendData);
+}
+
+void loop() {
+
+  Blynk.run();
+  timer.run();
+}
