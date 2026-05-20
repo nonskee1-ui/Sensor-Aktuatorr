@@ -1,0 +1,51 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "Gas Detector"
+#define BLYNK_AUTH_TOKEN "TOKEN_KAMU"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "NAMA_WIFI";
+char pass[] = "PASSWORD_WIFI";
+
+#define mqPin A0
+#define buzzerPin D5
+
+BlynkTimer timer;
+
+void sendData() {
+
+  int gas = analogRead(mqPin);
+
+  Blynk.virtualWrite(V0, gas);
+
+  if (gas > 500) {
+
+    digitalWrite(buzzerPin, HIGH);
+
+    Blynk.virtualWrite(V1, "Gas Terdeteksi");
+
+  } else {
+
+    digitalWrite(buzzerPin, LOW);
+
+    Blynk.virtualWrite(V1, "Aman");
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  pinMode(buzzerPin, OUTPUT);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(1000L, sendData);
+}
+
+void loop() {
+
+  Blynk.run();
+  timer.run();
+}
