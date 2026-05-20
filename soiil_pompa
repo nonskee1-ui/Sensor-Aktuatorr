@@ -1,0 +1,53 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "Smart Watering"
+#define BLYNK_AUTH_TOKEN "TOKEN_KAMU"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "NAMA_WIFI";
+char pass[] = "PASSWORD_WIFI";
+
+#define soilPin A0
+#define relayPin D5
+
+BlynkTimer timer;
+
+void sendData() {
+
+  int soil = analogRead(soilPin);
+
+  Blynk.virtualWrite(V0, soil);
+
+  if (soil > 700) {
+
+    digitalWrite(relayPin, LOW);
+
+    Blynk.virtualWrite(V1, "Tanah Kering - Pompa ON");
+
+  } else {
+
+    digitalWrite(relayPin, HIGH);
+
+    Blynk.virtualWrite(V1, "Tanah Basah - Pompa OFF");
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  pinMode(relayPin, OUTPUT);
+
+  digitalWrite(relayPin, HIGH);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(1000L, sendData);
+}
+
+void loop() {
+
+  Blynk.run();
+  timer.run();
+}
