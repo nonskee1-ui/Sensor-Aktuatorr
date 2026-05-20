@@ -1,0 +1,62 @@
+A. Soil Moisture + Servo
+Koneksi
+Soil Sensor	ESP8266
+VCC	3.3V
+GND	GND
+AO	A0
+Servo	ESP8266
+Signal	D5
+VCC	5V
+GND	GND
+
+B. Flame Sensor + Buzzer
+Koneksi
+Flame Sensor	ESP8266
+VCC	3.3V
+GND	GND
+DO	D5
+Buzzer	ESP8266
++	D6
+-	GND
+
+C. LDR + LED
+Koneksi
+LDR Module	ESP8266
+VCC	3.3V
+GND	GND
+AO	A0
+LED	ESP8266
+Anoda	D5
+Katoda	GND
+
+Gunakan resistor 220Ω.
+
+D. MQ2 + Buzzer
+Koneksi
+MQ2	ESP8266
+VCC	5V
+GND	GND
+AO	A0
+Buzzer	ESP8266
++	D5
+-	GND
+
+E. Ultrasonic + Servo
+Koneksi
+HC-SR04	ESP8266
+VCC	5V
+GND	GND
+Trig	D5
+Echo	D6
+Servo	ESP8266
+Signal	D7
+
+F. DHT11 + LED
+Koneksi
+DHT11	ESP8266
+VCC	3.3V
+GND	GND
+Data	D4
+LED	ESP8266
+Anoda	D5
+Katoda	GND
