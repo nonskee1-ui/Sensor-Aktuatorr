@@ -1,0 +1,66 @@
+#define BLYNK_TEMPLATE_ID "ESP23"
+#define BLYNK_TEMPLATE_NAME "Ultrasonic Servo"
+#define BLYNK_AUTH_TOKEN "TOKEN_KAMU"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <Servo.h>
+
+char ssid[] = "NAMA_WIFI";
+char pass[] = "PASSWORD_WIFI";
+
+#define trigPin D5
+#define echoPin D6
+
+Servo myServo;
+BlynkTimer timer;
+
+void sendData() {
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trigPin, LOW);
+
+  long duration = pulseIn(echoPin, HIGH);
+
+  float distance = duration * 0.034 / 2;
+
+  Blynk.virtualWrite(V0, distance);
+
+  if (distance < 20) {
+
+    myServo.write(90);
+
+    Blynk.virtualWrite(V1, "Objek Dekat");
+
+  } else {
+
+    myServo.write(0);
+
+    Blynk.virtualWrite(V1, "Objek Jauh");
+  }
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  myServo.attach(D7);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  timer.setInterval(1000L, sendData);
+}
+
+void loop() {
+
+  Blynk.run();
+  timer.run();
+}
